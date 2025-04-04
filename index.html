@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FeedConstruct Job Application</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f8f9fa;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    p {
+      line-height: 1.6;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input[type="text"], input[type="email"], input[type="tel"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-top: 5px;
+    }
+    .radio-group {
+      margin-top: 5px;
+    }
+    .radio-group label {
+      font-weight: normal;
+      margin-right: 10px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .captcha-question {
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>FeedConstruct - Live Match Data Collector Application</h1>
+    <p><strong>Job Description:</strong><br>
+      Role involves: Attending scheduled matches, collecting live data via our app, ensuring accurate, timely reporting.<br>
+      <strong>Compensation:</strong> €50 per game + match ticket reimbursement.<br>
+      Monthly payments (USDT, PayPal, or Skrill). Flexible schedule.
+    </p>
+
+    <form id="applicationForm" onsubmit="return submitToGoogleSheet();">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="Name" required />
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="Email" required />
+
+      <label for="phone">Phone</label>
+      <input type="tel" id="phone" name="Phone" required />
+
+      <label for="city">City of residence</label>
+      <input type="text" id="city" name="City" required />
+
+      <label>Do you own an Android phone?</label>
+      <div class="radio-group">
+        <label><input type="radio" name="OwnsAndroid" value="Yes" required /> Yes</label>
+        <label><input type="radio" name="OwnsAndroid" value="No" /> No</label>
+      </div>
+
+      <label>Do you have basic English communication skills?</label>
+      <div class="radio-group">
+        <label><input type="radio" name="EnglishSkills" value="Yes" required /> Yes</label>
+        <label><input type="radio" name="EnglishSkills" value="No" /> No</label>
+      </div>
+
+      <label>I understand this is freelance work with no contract or Partita IVA required, and I work when I want</label>
+      <div class="radio-group">
+        <label><input type="radio" name="FreelanceAgreement" value="Yes" required /> Yes</label>
+        <label><input type="radio" name="FreelanceAgreement" value="No" /> No</label>
+      </div>
+
+      <label>I understand that transportation is not reimbursed, and I must work near my location</label>
+      <div class="radio-group">
+        <label><input type="radio" name="TransportAgreement" value="Yes" required /> Yes</label>
+        <label><input type="radio" name="TransportAgreement" value="No" /> No</label>
+      </div>
+
+      <label>I am available for 6 hours of training</label>
+      <div class="radio-group">
+        <label><input type="radio" name="TrainingAvailability" value="Yes" required /> Yes</label>
+        <label><input type="radio" name="TrainingAvailability" value="No" /> No</label>
+      </div>
+
+      <div class="captcha-question">
+        <label for="captcha">What is 3 + 4?</label>
+        <input type="text" id="captcha" name="captcha" required />
+      </div>
+
+      <button type="submit">Submit Application</button>
+    </form>
+  </div>
+
+  <script>
+    function validateForm() {
+      const requiredYes = [
+        'OwnsAndroid',
+        'EnglishSkills',
+        'FreelanceAgreement',
+        'TransportAgreement',
+        'TrainingAvailability'
+      ];
+      for (let field of requiredYes) {
+        const yesOption = document.querySelector(`input[name="${field}"][value="Yes"]`);
+        if (!yesOption.checked) {
+          alert("You must agree to all required conditions by selecting 'Yes'.");
+          return false;
+        }
+      }
+
+      const captcha = document.getElementById("captcha").value.trim();
+      if (captcha !== "7") {
+        alert("Captcha incorrect. Please answer the question correctly.");
+        return false;
+      }
+
+      return true;
+    }
+
+    async function submitToGoogleSheet() {
+      if (!validateForm()) return false;
+
+      const form = document.getElementById("applicationForm");
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        await fetch("https://script.google.com/macros/s/AKfycbydSzSWo7fa_9vb4SKrY7rqogf2nXnWZWOuLJgxAWQgi-OkuR3ulVpRA1qvz_h-_sga/exec", {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: { "Content-Type": "application/json" }
+        });
+        alert("Application submitted successfully!");
+        form.reset();
+      } catch (error) {
+        alert("Failed to submit. Please try again.");
+      }
+
+      return false;
+    }
+  </script>
+</body>
+</html>
